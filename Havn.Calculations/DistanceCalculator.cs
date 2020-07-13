@@ -1,4 +1,4 @@
-﻿using Havn.Models;
+using Havn.Models;
 using System;
 
 namespace Havn.Calculations
@@ -24,7 +24,7 @@ namespace Havn.Calculations
                Math.Cos(Deg2Rad(lat1)) * Math.Cos(Deg2Rad(lat2)) *
                   Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
 
-         var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+         var c = 2 * Math.Asin(Math.Min(1, Math.Sqrt(a)));
          var distance = R * c;
 
          return distance;
