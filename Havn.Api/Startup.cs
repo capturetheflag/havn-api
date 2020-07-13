@@ -35,6 +35,8 @@ namespace Havn.Api
          services.AddScoped<IDistanceCalculator, DistanceCalculator>();
 
          services.AddControllers();
+
+         services.AddOpenApiDocument();
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,6 +55,9 @@ namespace Havn.Api
          {
             endpoints.MapControllers();
          });
+
+         app.UseOpenApi();
+         app.UseSwaggerUi3();
       }
 
       private static HttpClient ConfigureAirportsServiceClient(HttpClient httpClient, IConfiguration configuration)
