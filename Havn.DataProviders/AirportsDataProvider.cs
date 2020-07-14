@@ -1,4 +1,5 @@
 ﻿using Havn.Models;
+using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -17,7 +18,14 @@ namespace Havn.DataProviders
 
       public async Task<Airport> GetAirport(string iataCode)
       {
-         var result = await this.httpClient.GetStringAsync($"{ResourceName}/{iataCode.ToUpper()}");
+         var response = await this.httpClient.GetAsync($"{ResourceName}/{iataCode.ToUpper()}");
+
+         if (response.StatusCode == HttpStatusCode.NotFound)
+         {
+            return null;
+         }
+
+         var result = await response.Content.ReadAsStringAsync();
          return JsonSerializer.Deserialize<Airport>(result);
       }
    }

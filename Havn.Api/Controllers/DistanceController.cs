@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Havn.Calculations;
 using Havn.DataProviders;
 using Havn.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
@@ -13,6 +14,8 @@ namespace Havn.Api.Controllers
    [Route("[controller]")]
    public class DistanceController : ControllerBase
    {
+      private const int IataCodeLength = 3;
+
       private readonly IDistributedCache distributedCache;
       private readonly IAirportsDataProvider airportsDataProvider;
       private readonly IDistanceCalculator distanceCalculator;
@@ -31,8 +34,15 @@ namespace Havn.Api.Controllers
       }
 
       [HttpGet]
-      public async Task<double> Get(string from, string to)
+      [ProducesResponseType(StatusCodes.Status200OK)]
+      [ProducesResponseType(StatusCodes.Status400BadRequest)]
+      public async Task<ActionResult<double>> Get(string from, string to)
       {
+         if (!this.IsValid(from) || !this.IsValid(to))
+         {
+            return this.BadRequest();
+         }
+
          from = from.ToUpper();
          to = to.ToUpper();
 
@@ -43,7 +53,7 @@ namespace Havn.Api.Controllers
          double distance = 0;
          if (!string.IsNullOrEmpty(cachedValue) && double.TryParse(cachedValue, out distance))
          {
-            return distance;
+            return this.Ok(distance);
          }
 
          Airport airportFrom = null;
@@ -59,6 +69,11 @@ namespace Havn.Api.Controllers
             throw;
          }
 
+         if (airportFrom == null || airportTo == null)
+         {
+            return this.BadRequest($"Airport {(airportFrom == null ? from : to)} does not exist in the system");
+         }
+
          distance = this.distanceCalculator.GetDistanceMiles(
                airportFrom.Location,
                airportTo.Location);
@@ -66,7 +81,7 @@ namespace Havn.Api.Controllers
          this.CacheDistance($"{from}-{to}", distance);
          this.CacheDistance($"{to}-{from}", distance);
          
-         return distance;
+         return this.Ok(distance);
       }
 
       private async void CacheDistance(string key, double value)
@@ -82,6 +97,11 @@ namespace Havn.Api.Controllers
          {
             this.logger.LogError(ex, $"Failed to add new cache value with key: {key}");
          }
+      }
+
+      private bool IsValid(string iataCode)
+      {
+         return iataCode?.Length == IataCodeLength;
       }
    }
 }
