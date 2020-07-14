@@ -5,7 +5,7 @@ namespace Havn.Models
    public class Airport
    {
       [JsonPropertyName("iata")]
-      public string Iata { get; set; }
+      public string IataCode { get; set; }
 
       [JsonPropertyName("location")]
       public Location Location { get; set; }
