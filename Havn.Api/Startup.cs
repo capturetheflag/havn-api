@@ -30,13 +30,14 @@ namespace Havn.Api
       // This method gets called by the runtime. Use this method to add services to the container.
       public void ConfigureServices(IServiceCollection services)
       {
+         ConfigureApplicationCache(services, this.Configuration);
+
          services
             .AddHttpClient<IAirportsDataProvider, AirportsDataProvider>(
                (sp, client) => ConfigureAirportsServiceClient(client, this.Configuration))
             .SetHandlerLifetime(TimeSpan.FromHours(HttpHandlerLifetimeHours));
 
          services.AddScoped<IDistanceCalculator, DistanceCalculator>();
-         ConfigureApplicationCache(services, this.Configuration);
 
          services.AddControllers();
 
