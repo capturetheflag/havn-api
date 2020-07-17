@@ -33,7 +33,7 @@ namespace Havn.Api.Controllers
       [Produces("application/json")]
       [ProducesResponseType(StatusCodes.Status200OK)]
       [ProducesResponseType(StatusCodes.Status400BadRequest)]
-      public async Task<ActionResult<double>> Get(string from, string to)
+      public ActionResult<double> Get(string from, string to)
       {
          if (!this.IsValid(from) || !this.IsValid(to))
          {

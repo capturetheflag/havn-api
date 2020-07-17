@@ -16,7 +16,10 @@ namespace Havn.DataProviders
       private readonly HttpClient httpClient;
       private readonly ILogger<AirportsDataProvider> logger;
 
-      public AirportsDataProvider(IDistributedCache cache, HttpClient httpClient, ILogger<AirportsDataProvider> logger)
+      public AirportsDataProvider(
+         IDistributedCache cache,
+         HttpClient httpClient,
+         ILogger<AirportsDataProvider> logger)
       {
          this.cache = cache;
          this.httpClient = httpClient;
